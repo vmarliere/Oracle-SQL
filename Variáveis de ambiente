@@ -1,0 +1,31 @@
+--> Variaveis de ambiente (Linux)
+
+--> O que são as variaveis de ambiente?
+
+	- Variáveis de ambiente são valores dinâmicos que afetam os programas ou processos que estão em execução em um servidor. Eles existem em todos os sistemas operacionais, sendo que os tipos podem variar. Variaveis de ambientes podem ser criadas, editadas, salvadas e apagadas. 
+	- As variáveis de ambiente são variáveis definidas para a sessão atual do shell e são herdades por qualquer shell ou processo filho. As variáveis de ambiente são usadas para passar informações para processos gerados a partir do shell.
+
+
+--> Variaveis necessarias
+
+ps -ef | grep pmon
+
+echo $ORACLE_SID
+echo $ORACLE_BASE
+echo $ORACLE_HOME
+
+export ORACLE_SID=cdb19c
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/19.3.0.0/dbhome_1
+
+
+--> Arquivo de variaveis de ambiente
+
+env-db-SID.sh
+chmod +x env-db-SID.sh
+
+
+--> Configurando no bash_profile
+
+ls -tlha .bash_profile
+. ~/env-db-SID.sh
