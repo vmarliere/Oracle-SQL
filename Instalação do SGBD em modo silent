@@ -1,0 +1,111 @@
+-- Instalando Oracle  
+
+S.O: Oracle Linux 8.4
+Oracle: 19.3.0.0
+
+-- desabilitando firewall
+
+systemctl stop firewalld
+systemctl disable firewalld
+
+-- ajustar /etc/hosts
+
+vi /etc/hosts 
+192.168.1.109   ol8-19c ol8-19c.localdomain 
+
+
+-- instalando pacote preinstall
+
+yum search preinstall
+yum install oracle-database-preinstall-19c.x86_64
+
+
+- criando grupos e ajustando user oracle
+
+useradd oracle 
+Obs: caso não tenha criado na instalação do S.O
+
+id oracle 
+
+groupadd oinstall
+groupadd dba
+groupadd oper
+groupadd backupdba
+groupadd dgdba
+groupadd kmdba
+groupadd racdba
+usermod -g oinstall -G dba,oper,backupdba,dgdba,kmdba,racdba oracle
+
+passwd oracle 
+
+
+-- criando diretorio base e atribuindo permissão
+
+mkdir -p /u01/app/oracle/product/19.3.0.0/dbhome_1
+chown -R oracle:oinstall /u01 
+
+
+- descompactar no diretorio criado anteriomente
+
+
+- apos descompactar 
+
+$ORACLE_HOME/cv/admin/cvu_config
+CV_ASSUME_DISTID=OEL8
+
+
+#####INSTALAÇÂO MODO SILENT########
+
+
+-- pacote screen, agora tmux 
+
+yum install screen (descontinuado no OL8)
+screen (abre sessão)
+screen -r 
+
+- Usar tmux
+yum install tmux
+tmux 
+tmux ls
+tmux attach
+
+
+-- comando de instalação SGBD
+
+local: $ORACLE_HOME/install/response
+arquivo: db_install.rsp
+cd /u01/app/oracle/product/19.3.0.0/dbhome_1
+./runInstaller -silent -responseFile /home/oracle/db_install.rsp
+
+
+-- comando criação listener (NETCA)
+
+local: $ORACLE_HOME/assistants/netca
+arquivo: netca.rsp
+netca -silent -responsefile /home/oracle/netca.rsp
+
+
+-- Banco de dados (DBCA)
+
+Pode ser deito de duas formas
+
+- arquivo: dbca.rsp
+local: $ORACLE_HOME/assistants/dbca
+
+- ou passando todos os atributos
+dbca -silent -createDatabase                                                   \
+     -templateName General_Purpose.dbc                                         \
+     -gdbname viniciusdb -sid  orcl -responseFile NO_VALUE                     \
+     -characterSet AL32UTF8                                                    \
+     -sysPassword SysPassword1                                                 \
+     -systemPassword SysPassword1                                              \
+     -createAsContainerDatabase true                                           \
+     -numberOfPDBs 1                                                           \
+     -pdbName PDB01                                                            \
+     -pdbAdminPassword PdbPassword1                                            \
+     -databaseType MULTIPURPOSE                                                \
+     -memoryMgmtType auto_sga                                                  \
+     -totalMemory 2000                                                         \
+     -redoLogFileSize 200                                                      \
+     -emConfiguration NONE                                                     \
+     -ignorePreReqs
